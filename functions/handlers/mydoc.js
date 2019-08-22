@@ -33,3 +33,24 @@ exports.getAllDocs = async (req, res) => {
     .catch(err => console.error(err));
     */
 }
+
+exports.createDoc = async (req, res) => {
+    const newDoc = {
+        content: req.body.content,
+        username: req.user.username,
+        userImage: req.user.imageUrl,
+        createdAt: new Date().toDateString(),
+        likeCount: 0,
+        commentCount: 0
+    }
+    try {
+        let doc = await db.collection('mdoc').add(newDoc);
+        let responseDoc = newDoc;
+        responseDoc.docId = doc.id;
+        res.json(responseDoc);
+    }
+    catch(err){
+        res.status(500).json({ error: "something went wrong" });
+        console.error(err);
+    }
+}
