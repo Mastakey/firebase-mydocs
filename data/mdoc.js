@@ -1,6 +1,6 @@
 mdoc = {
     "title": "",
-    "content": "",
+    "contentId": "",
     "createdAt": "",
     "updatedAt": "",
     "createdBy": "",

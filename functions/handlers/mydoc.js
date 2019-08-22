@@ -36,21 +36,37 @@ exports.getAllDocs = async (req, res) => {
 
 exports.createDoc = async (req, res) => {
     const newDoc = {
-        content: req.body.content,
+        title: req.body.title,
+        //contentId: req.body.content,
         username: req.user.username,
         userImage: req.user.imageUrl,
         createdAt: new Date().toDateString(),
         likeCount: 0,
         commentCount: 0
-    }
+    };
+    const newContent = {
+        content: req.body.content,
+        docId: ""
+    };
     try {
-        let doc = await db.collection('mdoc').add(newDoc);
-        let responseDoc = newDoc;
-        responseDoc.docId = doc.id;
+        let doc = await db.collection("mdoc").add(newDoc);
+        let responseDoc = {
+            mdoc: {},
+            content: {}
+        };
+        responseDoc.mdoc = newDoc;
+        responseDoc.mdoc.docId = doc.id;
+        newContent.docId = doc.id;
+        let content = await db.collection("mcontent").add(newContent);
+        responseDoc.mcontent = newContent;
         res.json(responseDoc);
     }
     catch(err){
         res.status(500).json({ error: "something went wrong" });
         console.error(err);
     }
+}
+
+exports.editDoc = async (req, res) => {
+
 }

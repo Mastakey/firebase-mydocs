@@ -24,6 +24,7 @@ let createDoc = async function(token){
     }
     try {
         let res = await axios.post('https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc', {
+            "title": "mytitle",
             "content":"mycontent"
         },
         {headers: headers});
