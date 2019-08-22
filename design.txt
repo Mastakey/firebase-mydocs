@@ -1,0 +1,42 @@
+API
+
+mdoc
+    getall
+    getallByCategory
+    getallByTag
+    add
+    view
+    delete
+    edit
+    attach
+
+tag
+    getall
+    add
+    edit
+    delete
+    view
+
+category
+    getall
+    add
+    edit
+    delete
+    view
+
+comment
+    add
+    edit
+    delete
+    getCommentsByDocId
+
+like 
+    like
+    unlike
+    getLikesByDocId
+
+users
+    login
+    signup
+    view
+    
