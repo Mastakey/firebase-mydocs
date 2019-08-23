@@ -1,6 +1,5 @@
 const {db} = require('../util/admin');
 
-
 exports.getAllDocs = async (req, res) => {
     let allDocs = await db.collection('mdoc').orderBy('createdAt', 'desc').get();
     let docs = [];
@@ -68,5 +67,4 @@ exports.createDoc = async (req, res) => {
 }
 
 exports.editDoc = async (req, res) => {
-
 }

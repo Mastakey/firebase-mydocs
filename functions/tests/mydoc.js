@@ -39,6 +39,13 @@ let createDoc = async function(token){
     }
 }
 
+let editDoc = async function(token){
+    const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+    };
+}
+
 let run = async function(){
     console.log("Login Run");
     let data = await login();
