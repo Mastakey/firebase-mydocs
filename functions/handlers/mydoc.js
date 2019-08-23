@@ -58,7 +58,7 @@ exports.createDoc = async (req, res) => {
         newContent.docId = doc.id;
         let content = await db.collection("mcontent").add(newContent);
         responseDoc.mcontent = newContent;
-        res.json(responseDoc);
+        return res.status(200).json(responseDoc);
     }
     catch(err){
         res.status(500).json({ error: "something went wrong" });
@@ -67,4 +67,35 @@ exports.createDoc = async (req, res) => {
 }
 
 exports.editDoc = async (req, res) => {
+    let contentUpdated = req.body.contentUpdated;
+    const newDoc = {
+        title: req.body.title,
+        lastUpdatedBy: req.user.username,
+        updatedAt: new Date().toDateString()
+    }
+    try {
+        let doc = await db.doc(`/mdoc/${req.params.docId}`).get();
+        if (!doc.exists){
+            return res.status(404).json({error: "Doc not found"});
+        }
+        let responseDoc = {
+            mdoc: {},
+            content: {}
+        };
+        responseDoc.mdoc = await doc.ref.update(newDoc);
+        if (contentUpdated){
+            //create mcontent
+            const newContent = {
+                content: req.body.content,
+                docId: ""
+            };
+            newContent.docId = doc.id;
+            responseDoc.content = await db.collection("mcontent").add(newContent);
+        }
+        return res.status(200).json(responseDoc);
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({ error: "something went wrong" });
+    }
 }
