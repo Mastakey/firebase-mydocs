@@ -4,7 +4,7 @@ const app = require('express')();
 
 const FBAuth = require('./util/fbAuth');
 
-const { getAllDocs, createDoc, editDoc } = require('./handlers/mydoc');
+const { getAllDocs, createDoc, editDoc, deleteDoc } = require('./handlers/mydoc');
 const { signUp, login } = require('./handlers/users');
 
 
@@ -12,6 +12,20 @@ const { signUp, login } = require('./handlers/users');
 app.get('/mydoc', getAllDocs);
 app.post('/mydoc', FBAuth, createDoc);
 app.put('/mydoc/:docId', FBAuth, editDoc);
+app.delete("/mydoc/:docId", FBAuth, deleteDoc);
+//TODO
+//remove like
+//add comment
+//edit comment
+//remove comment
+
+//Tag routes
+//add tag
+//add tag to doc
+//remove tag
+//search tag
+//get all tags
+//add like
 
 //User routes
 app.post("/signup", signUp);

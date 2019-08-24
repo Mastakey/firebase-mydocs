@@ -99,3 +99,25 @@ exports.editDoc = async (req, res) => {
         res.status(500).json({ error: "something went wrong" });
     }
 }
+
+exports.deleteDoc = async (req, res) => {
+    const document = db.doc(`/mdoc/${req.params.docId}`);
+    
+    try {
+        const doc = await document.get();
+        if (!doc.exists) {
+            return res.status(404).json({ error: 'Doc not found' });
+        }
+        console.info(doc.data());
+        if (doc.data().username !== req.user.username) {
+            console.error(`${doc.data().username} does not match ${req.user.username}`);
+            return res.status(403).json({ error: "Unauthorized" });
+        }
+        await document.delete();
+        return res.json({message: 'Doc deleted successfully'});
+    }
+    catch(err){
+        console.error(err);
+        return res.status(500).json({error: err.code});
+    }
+}

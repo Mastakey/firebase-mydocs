@@ -85,6 +85,25 @@ let editDocNoUpdate = async function(token, docId){
     }
 }
 
+let deleteData = async function(token, docId){
+    const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+    };
+    try {
+        let res = await axios.delete(`https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/${docId}`, 
+            { headers: headers });
+        console.log(res.status);
+        console.log(res.statusText);
+        console.log(res.data);
+        return res.data;
+    } catch (err) {
+        console.error(err.response.status);
+        console.error(err.response.statusText);
+        console.error(err.response.data);
+    }
+}
+
 let run = async function(){
     console.log("Login Run");
     let data = await login();
@@ -95,6 +114,8 @@ let run = async function(){
     console.log("Edit Doc");
     await editDocUpdate(token, doc.mdoc.docId);
     //await editDocNoUpdate(token, doc.docId);
+    console.log("Delete Doc " + doc.mdoc.docId);
+    await deleteData(token, doc.mdoc.docId);
 }
 
 let sleep = function(ms){
