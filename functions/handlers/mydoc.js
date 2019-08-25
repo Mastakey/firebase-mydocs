@@ -60,6 +60,7 @@ exports.createDoc = async (req, res) => {
         //contentId: req.body.content,
         username: req.user.username,
         userImage: req.user.imageUrl,
+        category: req.body.category,
         createdAt: new Date().toDateString(),
         likeCount: 0,
         commentCount: 0
@@ -91,6 +92,7 @@ exports.editDoc = async (req, res) => {
     let contentUpdated = req.body.contentUpdated;
     const newDoc = {
         title: req.body.title,
+        category: req.body.category,
         lastUpdatedBy: req.user.username,
         updatedAt: new Date().toDateString()
     }

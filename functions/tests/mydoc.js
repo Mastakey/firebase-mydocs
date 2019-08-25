@@ -25,7 +25,8 @@ let createDoc = async function(token){
     try {
         let res = await axios.post('https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc', {
             "title": "mytitle",
-            "content":"mycontent"
+            "content":"mycontent",
+            "category": "python"
         },
         {headers: headers});
         console.log(res.status);
@@ -48,7 +49,8 @@ let editDocUpdate = async function(token, docId){
         let res = await axios.put(`https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/${docId}`, {
             "title": "content update",
             "content":"mycontent2",
-            "contentUpdated": true
+            "contentUpdated": true,
+            "category": "perl"
         },
         {headers: headers});
         console.log(res.status);

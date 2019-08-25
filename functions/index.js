@@ -16,17 +16,15 @@ app.put('/mydoc/:docId', FBAuth, editDoc);
 app.delete("/mydoc/:docId", FBAuth, deleteDoc);
 //TODO
 //add like
-app.post('/mydoc/:docId/like');
 //remove like
 //add comment
 //edit comment
 //remove comment
 
 //Tag routes
-//add tag
 //add tag to doc
-//remove tag
-//search tag
+//remove tag from doc
+//search docs by tag
 //get all tags
 
 //User routes
