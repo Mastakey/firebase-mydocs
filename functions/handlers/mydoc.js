@@ -33,6 +33,27 @@ exports.getAllDocs = async (req, res) => {
     */
 }
 
+exports.viewDoc = async (req, res) => {
+    let docData = {};
+    try {
+        let doc = await db.collection('mdoc').doc(req.params.docId).get();
+        docData = doc.data();
+        if (!doc.exists) {
+            return res.status(404).json({ error: "Doc1 not found" });
+        }
+
+        let snapshot = await db.collection('mcontent').where('docId', '==', req.params.docId).orderBy('createdAt', 'desc').limit(1).get();
+        snapshot.forEach(mycontent => {
+            docData.content = mycontent;
+        });
+        return res.json(docData);
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({error: err});
+    }
+}
+
 exports.createDoc = async (req, res) => {
     const newDoc = {
         title: req.body.title,

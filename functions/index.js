@@ -4,16 +4,19 @@ const app = require('express')();
 
 const FBAuth = require('./util/fbAuth');
 
-const { getAllDocs, createDoc, editDoc, deleteDoc } = require('./handlers/mydoc');
+const { getAllDocs, viewDoc, createDoc, editDoc, deleteDoc } = require('./handlers/mydoc');
 const { signUp, login } = require('./handlers/users');
 
 
 //Doc routes
 app.get('/mydoc', getAllDocs);
+app.get('/mydoc/:docId', viewDoc);
 app.post('/mydoc', FBAuth, createDoc);
 app.put('/mydoc/:docId', FBAuth, editDoc);
 app.delete("/mydoc/:docId", FBAuth, deleteDoc);
 //TODO
+//add like
+app.post('/mydoc/:docId/like');
 //remove like
 //add comment
 //edit comment
@@ -25,7 +28,6 @@ app.delete("/mydoc/:docId", FBAuth, deleteDoc);
 //remove tag
 //search tag
 //get all tags
-//add like
 
 //User routes
 app.post("/signup", signUp);

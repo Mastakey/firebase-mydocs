@@ -104,6 +104,20 @@ let deleteData = async function(token, docId){
     }
 }
 
+let viewDoc = async function(docId){
+    try {
+        let res = await axios.get(`https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/${docId}`);
+        console.log(res.status);
+        console.log(res.statusText);
+        console.log(res.data);
+        return res.data;
+    } catch (err) {
+        console.error(err.response.status);
+        console.error(err.response.statusText);
+        console.error(err.response.data);
+    }    
+}
+
 let run = async function(){
     console.log("Login Run");
     let data = await login();
@@ -111,9 +125,15 @@ let run = async function(){
     let token = data.token;
     let doc = await createDoc(token);
     //await sleep(2000);
+    console.log('View Doc');
+    await viewDoc(doc.mdoc.docId);
     console.log("Edit Doc");
     await editDocUpdate(token, doc.mdoc.docId);
     //await editDocNoUpdate(token, doc.docId);
+    console.log("View Doc");
+    await viewDoc(doc.mdoc.docId);
+    
+    
     console.log("Delete Doc " + doc.mdoc.docId);
     await deleteData(token, doc.mdoc.docId);
 }
