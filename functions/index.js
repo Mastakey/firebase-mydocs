@@ -5,7 +5,7 @@ const app = require('express')();
 const FBAuth = require('./util/fbAuth');
 
 const { getAllDocs, viewDoc, createDoc, editDoc, deleteDoc } = require('./handlers/mydoc');
-const { signUp, login } = require('./handlers/users');
+const { signUp, login, getAuthenticatedUser, getUserDetails } = require('./handlers/users');
 
 
 //Doc routes
@@ -30,5 +30,7 @@ app.delete("/mydoc/:docId", FBAuth, deleteDoc);
 //User routes
 app.post("/signup", signUp);
 app.post("/login", login);
+app.get('/user', FBAuth, getAuthenticatedUser);
+app.get('/user/:username', getUserDetails);
 
 exports.api = functions.https.onRequest(app);

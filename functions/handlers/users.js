@@ -75,3 +75,35 @@ exports.login = async (req, res) => {
         return res.status(500).json({error: err.code});
     }
 }
+
+//Get user details
+exports.getAuthenticatedUser = (req, res) => {
+    let userData = {};
+    db.doc(`/users/${req.user.username}`).get()
+    .then((doc) => {
+        if (doc.exists){
+            userData.credentials = doc.data();
+        }
+        return res.json(userData);
+    })
+    .catch((err) => {
+        console.error(err);
+        return res.status(500).json({error: err.code});
+    })
+}
+
+//Get any user details
+exports.getUserDetails = (req, res) => {
+    let userData = {};
+    db.doc(`/users/${req.params.username}`).get()
+        .then(doc => {
+            if (doc.exists){
+                userData.user = doc.data();
+            }
+            return res.json(userData);
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({error: err.code});
+        })
+}
