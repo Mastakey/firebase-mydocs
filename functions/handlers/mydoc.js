@@ -5,6 +5,7 @@ exports.getAllDocs = async (req, res) => {
     let docs = [];
     allDocs.forEach(doc => {
         docs.push({
+            id: doc.id,
             ...doc.data()
         });
     })
