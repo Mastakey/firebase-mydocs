@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const cors = require('cors');
 
 const app = require('express')();
 
@@ -6,6 +7,9 @@ const FBAuth = require('./util/fbAuth');
 
 const { getAllDocs, viewDoc, createDoc, editDoc, deleteDoc } = require('./handlers/mydoc');
 const { signUp, login, getAuthenticatedUser, getUserDetails } = require('./handlers/users');
+
+
+app.use(cors());
 
 
 //Doc routes
