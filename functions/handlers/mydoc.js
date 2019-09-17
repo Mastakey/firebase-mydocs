@@ -36,31 +36,40 @@ exports.getAllDocs = async (req, res) => {
 
 exports.viewDoc = async (req, res) => {
     let docData = {
-        content: ''
+      mdoc: {},
+      content: ""
     };
     try {
         let doc = await db.collection('mdoc').doc(req.params.docId).get();
-        docData = {
-            ...doc.data()
-        };
+        docData.mdoc = doc.data();
         if (!doc.exists) {
             return res.status(404).json({ error: "Doc1 not found" });
         }
 
         let snapshot = await db.collection('mcontent').where('docId', '==', req.params.docId).orderBy('createdAt', 'desc').limit(1).get();
-        if (snapshot.length < 1){
-            console.error("content is empty or not found");
-            console.error(snapshot);
-            return res.status(404).json(snapshot);
-        }
         snapshot.forEach(mycontent => {
-            docData.content = mycontent.content;
+            docData.content = mycontent.data().content;
         });
         return res.json(docData);
     }
     catch(err){
         console.error(err);
         res.status(500).json({error: err});
+    }
+}
+
+exports.viewDocHistory = async (req, res) => {
+    let docHistory = [];
+    try {
+        let snapshot = await db.collection('mcontent').where('docId', '==', req.params.docId).orderBy('createdAt', 'desc').get();
+        snapshot.forEach(mycontent => {
+            docHistory.push(mycontent.data());
+        });
+        return res.json(docHistory);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err });
     }
 }
 
@@ -76,8 +85,9 @@ exports.createDoc = async (req, res) => {
         commentCount: 0
     };
     const newContent = {
-        content: req.body.content,
-        docId: ""
+      content: req.body.content,
+      docId: "",
+      createdAt: new Date().toDateString()
     };
     try {
         let doc = await db.collection("mdoc").add(newDoc);
@@ -89,7 +99,7 @@ exports.createDoc = async (req, res) => {
         responseDoc.mdoc.docId = doc.id;
         newContent.docId = doc.id;
         let content = await db.collection("mcontent").add(newContent);
-        responseDoc.mcontent = newContent;
+        responseDoc.mcontent = newContent.content;
         return res.status(200).json(responseDoc);
     }
     catch(err){
@@ -115,17 +125,19 @@ exports.editDoc = async (req, res) => {
             mdoc: {},
             content: {}
         };
-        responseDoc.mdoc = await doc.ref.update(newDoc);
+        await doc.ref.update(newDoc);
         if (contentUpdated){
             //create mcontent
             const newContent = {
                 content: req.body.content,
+                createdAt: new Date().toDateString(),
                 docId: ""
             };
             newContent.docId = doc.id;
-            responseDoc.content = await db.collection("mcontent").add(newContent);
+            await db.collection("mcontent").add(newContent);
+            newDoc.content = req.body.content;
         }
-        return res.status(200).json(responseDoc);
+        return res.status(200).json(newDoc);
     }
     catch(err){
         console.error(err);
