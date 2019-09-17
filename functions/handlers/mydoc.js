@@ -35,17 +35,26 @@ exports.getAllDocs = async (req, res) => {
 }
 
 exports.viewDoc = async (req, res) => {
-    let docData = {};
+    let docData = {
+        content: ''
+    };
     try {
         let doc = await db.collection('mdoc').doc(req.params.docId).get();
-        docData = doc.data();
+        docData = {
+            ...doc.data()
+        };
         if (!doc.exists) {
             return res.status(404).json({ error: "Doc1 not found" });
         }
 
         let snapshot = await db.collection('mcontent').where('docId', '==', req.params.docId).orderBy('createdAt', 'desc').limit(1).get();
+        if (snapshot.length < 1){
+            console.error("content is empty or not found");
+            console.error(snapshot);
+            return res.status(404).json(snapshot);
+        }
         snapshot.forEach(mycontent => {
-            docData.content = mycontent;
+            docData.content = mycontent.content;
         });
         return res.json(docData);
     }
