@@ -29,7 +29,7 @@ exports.signUp = async (req, res) => {
         const userCredentials = {
             username: newUser.username,
             email: newUser.email,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toUTCString(),
             imageUrl: noImg,
             userId: userId
         }

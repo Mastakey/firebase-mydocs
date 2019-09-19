@@ -66,6 +66,40 @@ let editDocUpdate = async function(token, docId){
     }
 }
 
+let editDocUpdateComplex = async function (token, docId) {
+    const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+    };
+    try {
+        let res = await axios.put(`https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/${docId}`, {
+            category: "Todo",
+            commentCount: 0,
+            content: "<h2>Add a delete warning</h2>",
+            contentUpdated: true,
+            createdAt: "Wed Sep 18 2019",
+            delta: '({ ops: [{ insert: "Add a delete warning" }, { attributes: { header: 2 }, insert: "↵" }] })',
+            lastUpdatedBy: "mastakey",
+            likeCount: 0,
+            title: "Delete warning",
+            updatedAt: "Thu Sep 19 2019",
+            userImage: "no-img.png",
+            username: "mastakey"
+        },
+            { headers: headers });
+        console.log(res.status);
+        console.log(res.statusText);
+        console.log(res.data);
+        return res.data;
+    } catch (err) {
+        console.error(err.response.status);
+        console.error(err.response.statusText);
+        console.error(err.response.data);
+    }
+}
+
+
+
 let editDocNoUpdate = async function(token, docId){
     const headers = {
         "Content-Type": "application/json",
@@ -146,7 +180,7 @@ let run = async function(){
     console.log('View Doc');
     await viewDoc(doc.mdoc.docId);
     console.log("Edit Doc");
-    await editDocUpdate(token, doc.mdoc.docId);
+    await editDocUpdateComplex(token, doc.mdoc.docId);
     //await editDocNoUpdate(token, doc.docId);
     console.log("View Doc");
     await viewDoc(doc.mdoc.docId);

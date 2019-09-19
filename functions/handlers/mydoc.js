@@ -82,7 +82,7 @@ exports.createDoc = async (req, res) => {
         username: req.user.username,
         userImage: req.user.imageUrl,
         category: req.body.category,
-        createdAt: new Date().toDateString(),
+        createdAt: new Date().toUTCString(),
         likeCount: 0,
         commentCount: 0
     };
@@ -90,7 +90,7 @@ exports.createDoc = async (req, res) => {
       content: req.body.content,
       delta: req.body.delta,
       docId: "",
-      createdAt: new Date().toDateString()
+      createdAt: new Date().toUTCString()
     };
     try {
         let doc = await db.collection("mdoc").add(newDoc);
@@ -122,7 +122,7 @@ exports.editDoc = async (req, res) => {
         title: req.body.title,
         category: req.body.category,
         lastUpdatedBy: req.user.username,
-        updatedAt: new Date().toDateString()
+        updatedAt: new Date().toUTCString()
     }
     try {
         let doc = await db.doc(`/mdoc/${req.params.docId}`).get();
@@ -137,16 +137,16 @@ exports.editDoc = async (req, res) => {
         await doc.ref.update(newDoc);
         if (contentUpdated){
             //create mcontent
+            let delta = req.body.delta;
             const newContent = {
-                content: req.body.content,
-                delta: req.body.delta,
-                createdAt: new Date().toDateString(),
-                docId: ""
+              content: req.body.content,
+              delta: delta,
+              createdAt: new Date().toUTCString(),
+              docId: doc.id
             };
-            newContent.docId = doc.id;
             await db.collection("mcontent").add(newContent);
             docData.content = req.body.content;
-            docData.delta = req.body.delta;
+            docData.delta = delta;
         }
         return res.status(200).json(docData);
     }
