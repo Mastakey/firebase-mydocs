@@ -49,6 +49,7 @@ exports.viewDoc = async (req, res) => {
         let snapshot = await db.collection('mcontent').where('docId', '==', req.params.docId).orderBy('createdAt', 'desc').limit(1).get();
         snapshot.forEach(mycontent => {
             docData.content = mycontent.data().content;
+            docData.delta = mycontent.data().delta;
         });
         return res.json(docData);
     }
@@ -86,6 +87,7 @@ exports.createDoc = async (req, res) => {
     };
     const newContent = {
       content: req.body.content,
+      delta: req.body.delta,
       docId: "",
       createdAt: new Date().toDateString()
     };
@@ -93,13 +95,13 @@ exports.createDoc = async (req, res) => {
         let doc = await db.collection("mdoc").add(newDoc);
         let responseDoc = {
             mdoc: {},
-            content: {}
+            content: ''
         };
         responseDoc.mdoc = newDoc;
         responseDoc.mdoc.docId = doc.id;
         newContent.docId = doc.id;
         let content = await db.collection("mcontent").add(newContent);
-        responseDoc.mcontent = newContent.content;
+        responseDoc.content = newContent.content;
         return res.status(200).json(responseDoc);
     }
     catch(err){
@@ -130,6 +132,7 @@ exports.editDoc = async (req, res) => {
             //create mcontent
             const newContent = {
                 content: req.body.content,
+                delta: req.body.delta,
                 createdAt: new Date().toDateString(),
                 docId: ""
             };
