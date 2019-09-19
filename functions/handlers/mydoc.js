@@ -37,7 +37,8 @@ exports.getAllDocs = async (req, res) => {
 exports.viewDoc = async (req, res) => {
     let docData = {
       mdoc: {},
-      content: ""
+      content: "",
+      delta: []
     };
     try {
         let doc = await db.collection('mdoc').doc(req.params.docId).get();
@@ -111,6 +112,11 @@ exports.createDoc = async (req, res) => {
 }
 
 exports.editDoc = async (req, res) => {
+    let docData = {
+        mdoc: {},
+        content: "",
+        delta: []
+    };
     let contentUpdated = req.body.contentUpdated;
     const newDoc = {
         title: req.body.title,
@@ -120,13 +126,14 @@ exports.editDoc = async (req, res) => {
     }
     try {
         let doc = await db.doc(`/mdoc/${req.params.docId}`).get();
+        docData.mdoc = doc.data();
         if (!doc.exists){
             return res.status(404).json({error: "Doc not found"});
         }
-        let responseDoc = {
-            mdoc: {},
-            content: {}
-        };
+        docData.mdoc.title = newDoc.title;
+        docData.mdoc.category = newDoc.category;
+        docData.mdoc.lastUpdatedBy = newDoc.lastUpdatedBy;
+        docData.mdoc.updatedAt = newDoc.updatedAt;
         await doc.ref.update(newDoc);
         if (contentUpdated){
             //create mcontent
@@ -138,9 +145,10 @@ exports.editDoc = async (req, res) => {
             };
             newContent.docId = doc.id;
             await db.collection("mcontent").add(newContent);
-            newDoc.content = req.body.content;
+            docData.content = req.body.content;
+            docData.delta = req.body.delta;
         }
-        return res.status(200).json(newDoc);
+        return res.status(200).json(docData);
     }
     catch(err){
         console.error(err);
