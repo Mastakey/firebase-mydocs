@@ -1,7 +1,10 @@
 const {db} = require('../util/admin');
 
 exports.getAllDocs = async (req, res) => {
-    let allDocs = await db.collection('mdoc').orderBy('createdAt', 'desc').get();
+    let allDocs = await db
+      .collection("mdoc")
+      .orderBy("createdAtTimestamp", "desc")
+      .get();
     let docs = [];
     allDocs.forEach(doc => {
         docs.push({
@@ -47,7 +50,12 @@ exports.viewDoc = async (req, res) => {
             return res.status(404).json({ error: "Doc1 not found" });
         }
 
-        let snapshot = await db.collection('mcontent').where('docId', '==', req.params.docId).orderBy('createdAt', 'desc').limit(1).get();
+        let snapshot = await db
+          .collection("mcontent")
+          .where("docId", "==", req.params.docId)
+          .orderBy("createdAtTimestamp", "desc")
+          .limit(1)
+          .get();
         snapshot.forEach(mycontent => {
             docData.content = mycontent.data().content;
             docData.delta = mycontent.data().delta;
@@ -63,7 +71,11 @@ exports.viewDoc = async (req, res) => {
 exports.viewDocHistory = async (req, res) => {
     let docHistory = [];
     try {
-        let snapshot = await db.collection('mcontent').where('docId', '==', req.params.docId).orderBy('createdAt', 'desc').get();
+        let snapshot = await db
+          .collection("mcontent")
+          .where("docId", "==", req.params.docId)
+          .orderBy("createdAtTimestamp", "desc")
+          .get();
         snapshot.forEach(mycontent => {
             docHistory.push(mycontent.data());
         });
@@ -76,13 +88,15 @@ exports.viewDocHistory = async (req, res) => {
 }
 
 exports.createDoc = async (req, res) => {
+    let date = new Date();
     const newDoc = {
         title: req.body.title,
         //contentId: req.body.content,
         username: req.user.username,
         userImage: req.user.imageUrl,
         category: req.body.category,
-        createdAt: new Date().toUTCString(),
+        createdAt: date.toUTCString(),
+        createdAtTimestamp: date.getTime(), 
         likeCount: 0,
         commentCount: 0
     };
@@ -90,7 +104,8 @@ exports.createDoc = async (req, res) => {
       content: req.body.content,
       delta: req.body.delta,
       docId: "",
-      createdAt: new Date().toUTCString()
+      createdAt: date.toUTCString(),
+      createdAtTimestamp: date.getTime()
     };
     try {
         let doc = await db.collection("mdoc").add(newDoc);
@@ -112,6 +127,7 @@ exports.createDoc = async (req, res) => {
 }
 
 exports.editDoc = async (req, res) => {
+    let date = new Date();
     let docData = {
         mdoc: {},
         content: "",
@@ -119,11 +135,11 @@ exports.editDoc = async (req, res) => {
     };
     let contentUpdated = req.body.contentUpdated;
     const newDoc = {
-        title: req.body.title,
-        category: req.body.category,
-        lastUpdatedBy: req.user.username,
-        updatedAt: new Date().toUTCString()
-    }
+      title: req.body.title,
+      category: req.body.category,
+      lastUpdatedBy: req.user.username,
+      updatedAt: date.toUTCString()
+    };
     try {
         let doc = await db.doc(`/mdoc/${req.params.docId}`).get();
         docData.mdoc = doc.data();
@@ -141,7 +157,8 @@ exports.editDoc = async (req, res) => {
             const newContent = {
               content: req.body.content,
               delta: delta,
-              createdAt: new Date().toUTCString(),
+              createdAt: date.toUTCString(),
+              createdAtTimestamp: date.getTime(),
               docId: doc.id
             };
             await db.collection("mcontent").add(newContent);
