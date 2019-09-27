@@ -13,9 +13,9 @@ app.use(cors());
 
 
 //Doc routes
-app.get('/mydoc', getAllDocs);
-app.get('/mydoc/:docId', viewDoc);
-app.get("/mydoc/history/:docId", viewDocHistory);
+app.get('/mydoc', FBAuth, getAllDocs);
+app.get("/mydoc/:docId", FBAuth, viewDoc);
+app.get("/mydoc/history/:docId", FBAuth, viewDocHistory);
 app.post('/mydoc', FBAuth, createDoc);
 app.put('/mydoc/:docId', FBAuth, editDoc);
 app.delete("/mydoc/:docId", FBAuth, deleteDoc);

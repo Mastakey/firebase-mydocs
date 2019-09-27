@@ -3,6 +3,7 @@ const {db} = require('../util/admin');
 exports.getAllDocs = async (req, res) => {
     let allDocs = await db
       .collection("mdoc")
+      .where('username', '==', req.user.username)
       .orderBy("createdAtTimestamp", "desc")
       .get();
     let docs = [];
@@ -49,11 +50,16 @@ exports.viewDoc = async (req, res) => {
         if (!doc.exists) {
             return res.status(404).json({ error: "Doc1 not found" });
         }
-
+        if (doc.data().username !== req.user.username) {
+          console.error(
+            `${doc.data().username} does not match ${req.user.username}`
+          );
+          return res.status(403).json({ error: "Unauthorized" });
+        }
         let snapshot = await db
           .collection("mcontent")
           .where("docId", "==", req.params.docId)
-          .orderBy("createdAtTimestamp", "desc")
+            .orderBy("createdAtTimestamp", "desc")
           .limit(1)
           .get();
         snapshot.forEach(mycontent => {
@@ -74,7 +80,7 @@ exports.viewDocHistory = async (req, res) => {
         let snapshot = await db
           .collection("mcontent")
           .where("docId", "==", req.params.docId)
-          .orderBy("createdAtTimestamp", "desc")
+            .orderBy("createdAtTimestamp", "desc")
           .get();
         snapshot.forEach(mycontent => {
             docHistory.push(mycontent.data());
@@ -105,7 +111,8 @@ exports.createDoc = async (req, res) => {
       delta: req.body.delta,
       docId: "",
       createdAt: date.toUTCString(),
-      createdAtTimestamp: date.getTime()
+      createdAtTimestamp: date.getTime(),
+      username: req.user.username
     };
     try {
         let doc = await db.collection("mdoc").add(newDoc);
@@ -138,13 +145,20 @@ exports.editDoc = async (req, res) => {
       title: req.body.title,
       category: req.body.category,
       lastUpdatedBy: req.user.username,
-      updatedAt: date.toUTCString()
+      updatedAt: date.toUTCString(),
+      updatedAtTimestamp: date.getTime()
     };
     try {
         let doc = await db.doc(`/mdoc/${req.params.docId}`).get();
         docData.mdoc = doc.data();
         if (!doc.exists){
             return res.status(404).json({error: "Doc not found"});
+        }
+        if (doc.data().username !== req.user.username) {
+            console.error(
+                `${doc.data().username} does not match ${req.user.username}`
+            );
+            return res.status(403).json({ error: "Unauthorized" });
         }
         docData.mdoc.title = newDoc.title;
         docData.mdoc.category = newDoc.category;
@@ -159,6 +173,7 @@ exports.editDoc = async (req, res) => {
               delta: delta,
               createdAt: date.toUTCString(),
               createdAtTimestamp: date.getTime(),
+              username: req.user.username,
               docId: doc.id
             };
             await db.collection("mcontent").add(newContent);

@@ -142,9 +142,14 @@ let deleteData = async function(token, docId){
     }
 }
 
-let viewDoc = async function(docId){
+let viewDoc = async function(token, docId){
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    };
     try {
-        let res = await axios.get(`https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/${docId}`);
+        let res = await axios.get(`https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/${docId}`,
+            { headers: headers });
         console.log(res.status);
         console.log(res.statusText);
         console.log(res.data);
@@ -156,9 +161,14 @@ let viewDoc = async function(docId){
     }    
 }
 
-let viewDocHistory = async function (docId) {
+let viewDocHistory = async function (token, docId) {
+    const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+    };
     try {
-        let res = await axios.get(`https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/history/${docId}`);
+        let res = await axios.get(`https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/history/${docId}`,
+            { headers: headers });
         console.log(res.status);
         console.log(res.statusText);
         console.log(res.data);
@@ -178,14 +188,14 @@ let run = async function(){
     let doc = await createDoc(token);
     //await sleep(2000);
     console.log('View Doc');
-    await viewDoc(doc.mdoc.docId);
+    await viewDoc(token, doc.mdoc.docId);
     console.log("Edit Doc");
     await editDocUpdateComplex(token, doc.mdoc.docId);
     //await editDocNoUpdate(token, doc.docId);
     console.log("View Doc");
-    await viewDoc(doc.mdoc.docId);
+    await viewDoc(token, doc.mdoc.docId);
     console.log("View Doc History");
-    await viewDocHistory(doc.mdoc.docId);
+    await viewDocHistory(token, doc.mdoc.docId);
     
     //console.log("Delete Doc " + doc.mdoc.docId);
     //await deleteData(token, doc.mdoc.docId);
