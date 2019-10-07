@@ -27,7 +27,8 @@ let createDoc = async function(token){
             "title": "mytitle",
             "content":"mycontent",
             "delta": '[]',
-            "category": "python"
+            "category": "python",
+            "tags": ['javascript', 'react']
         },
         {headers: headers});
         console.log(res.status);
@@ -72,21 +73,26 @@ let editDocUpdateComplex = async function (token, docId) {
         Authorization: `Bearer ${token}`
     };
     try {
-        let res = await axios.put(`https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/${docId}`, {
+        let res = await axios.put(
+          `https://us-central1-mydocs-3a1ce.cloudfunctions.net/api/mydoc/${docId}`,
+          {
             category: "Todo",
             commentCount: 0,
             content: "<h2>Add a delete warning</h2>",
             contentUpdated: true,
             createdAt: "Wed Sep 18 2019",
-            delta: '({ ops: [{ insert: "Add a delete warning" }, { attributes: { header: 2 }, insert: "↵" }] })',
+            delta:
+              '({ ops: [{ insert: "Add a delete warning" }, { attributes: { header: 2 }, insert: "↵" }] })',
             lastUpdatedBy: "mastakey",
             likeCount: 0,
             title: "Delete warning",
             updatedAt: "Thu Sep 19 2019",
             userImage: "no-img.png",
-            username: "mastakey"
-        },
-            { headers: headers });
+            username: "mastakey",
+            tags: ["javascript", "react"]
+          },
+          { headers: headers }
+        );
         console.log(res.status);
         console.log(res.statusText);
         console.log(res.data);
